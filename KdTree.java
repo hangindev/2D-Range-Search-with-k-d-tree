@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
-import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.Stack;
@@ -26,18 +25,21 @@ public class KdTree {
         }
     }
 
-    // construct an empty set of points
+    // Initializes an empty symbol table
     public KdTree() {
     }
 
+    // is the set empty?
     public boolean isEmpty() {
         return size == 0;
     }
 
+    // number of points in the set
     public int size() {
         return size;
     }
 
+    // does the set contain point p?
     public boolean contains(Point2D p) {
         if (p == null) throw new NullPointerException();
         return get(p) != null;
@@ -54,15 +56,14 @@ public class KdTree {
         double cmp;
         switch (keycoord) {
             case  1: {
-                cmp = p.x()-n.p.x();
+                cmp = p.x() - n.p.x();
                 if      (cmp < 0)            return get(n.left, p);
                 else if (cmp > 0)            return get(n.right, p);
                 else if (p.y() != n.p.y())   return get(n.right, p);
                 else                         return n.p;
             }
-            case -1:{
-                //cmp = p.Y_ORDER.compare(p,n.p);
-                cmp = p.y()-n.p.y();
+            case -1: {
+                cmp = p.y() - n.p.y();
                 if      (cmp < 0)            return get(n.left, p);
                 else if (cmp > 0)            return get(n.right, p);
                 else if (p.x() != n.p.x())   return get(n.right, p);
@@ -72,13 +73,10 @@ public class KdTree {
         }
     }
 
+    // add the point to the set (if it is not already in the set)
     public void insert(Point2D p) {
         if (p == null) throw new NullPointerException();
         keycoord = -1;
-        //xmin = Double.NEGATIVE_INFINITY;
-        //ymin = Double.NEGATIVE_INFINITY;
-        //xmax = Double.POSITIVE_INFINITY;
-        //ymax = Double.POSITIVE_INFINITY;
         xmin = 0;
         ymin = 0;
         xmax = 1;
@@ -97,7 +95,7 @@ public class KdTree {
         double cmp;
         switch (keycoord) {
             case  1: {
-                cmp = p.x()-n.p.x();
+                cmp = p.x() - n.p.x();
                 if      (cmp < 0) {
                     xmax = n.p.x();
                     n.left  = put(n.left,  p);
@@ -112,8 +110,8 @@ public class KdTree {
                 }
                 break;
             }
-            case -1:{
-                cmp = p.y()-n.p.y();
+            case -1: {
+                cmp = p.y() - n.p.y();
                 if      (cmp < 0) {
                     ymax = n.p.y();
                     n.left  = put(n.left,  p);
@@ -140,10 +138,13 @@ public class KdTree {
     }
 
     private void draw(Node n, int keycoord) {
-        StdDraw.setPenRadius(0.02);
+        // draw the point
+        StdDraw.setPenRadius(0.01);
         StdDraw.setPenColor(StdDraw.BLACK);
         n.p.draw();
-        StdDraw.setPenRadius(0.01);
+
+        // draw the rect
+        StdDraw.setPenRadius(0.005);
         keycoord = keycoord * (-1);
         switch (keycoord) {
             case  1:  {
@@ -156,12 +157,13 @@ public class KdTree {
             }
             default: break;
         }
-        //StdOut.println(n.rect); //test
         n.rect.draw();
+
         if(n.left != null)  draw(n.left, keycoord);
         if(n.right != null) draw(n.right, keycoord);
     }
 
+    // all points that are inside the rectangle
     public Iterable<Point2D> range(RectHV rect) {
         stack = new Stack<Point2D>();
         if (root != null) rangeSearch(root, rect);
@@ -178,14 +180,15 @@ public class KdTree {
         }
     }
 
+    // a nearest neighbor in the set to point p; null if the set is empty
     public Point2D nearest(Point2D p) {
         if (root == null) return null;
         else {
-          nearestPoint = root.p;
-          nearestDistance = p.distanceSquaredTo(root.p);
-          keycoord = -1;
-          nearestSearch(root, p);
-          return nearestPoint;
+            nearestPoint = root.p;
+            nearestDistance = p.distanceSquaredTo(root.p);
+            keycoord = -1;
+            nearestSearch(root, p);
+            return nearestPoint;
         }
     }
 
@@ -199,7 +202,7 @@ public class KdTree {
         double cmp;
         switch (keycoord) {
             case  1:  {
-                cmp = p.x()-n.p.x();
+                cmp = p.x() - n.p.x();
                 if      (cmp < 0) {
                     nearestSearch(n.left,  p);
                     if (n.right != null) {
@@ -224,7 +227,7 @@ public class KdTree {
                 break;
             }
             case  -1:  {
-                cmp = p.y()-n.p.y();
+                cmp = p.y() - n.p.y();
                 if      (cmp < 0) {
                     nearestSearch(n.left,  p);
                     if (n.right != null) {
